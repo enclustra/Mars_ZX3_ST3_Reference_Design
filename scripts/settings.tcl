@@ -43,10 +43,12 @@ switch $module_name {
   MA-ZX3-20-1C-D9 {
     set part xc7z020clg484-1 
     set CPU_FREQ 1C
+    set PS_DDR PS_D9
   }
   MA-ZX3-20-2I-D10 {
     set part xc7z020clg484-2 
     set CPU_FREQ 2I
+    set PS_DDR PS_D10
   }
   default {
     puts "$module_name not available"
