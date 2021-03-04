@@ -1,0 +1,8 @@
+/include/ "system-conf.dtsi"
+/ {
+	model = "Enclustra MA-ZX3-20-1C-D9 SOM";
+};
+#include "zynq_enclustra_common.dtsi"
+#include "zynq_enclustra_mars_st3.dtsi"
+#include "zynq_enclustra_mars_zx3.dtsi"
+#include "zynq_enclustra_nand_parts.dtsi"
