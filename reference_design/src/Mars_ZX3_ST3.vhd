@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
--- Copyright (c) 2021 by Enclustra GmbH, Switzerland.
+-- Copyright (c) 2022 by Enclustra GmbH, Switzerland.
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy of
 -- this hardware, software, firmware, and associated documentation files (the
@@ -55,7 +55,7 @@ entity Mars_ZX3_ST3 is
     DDR_dqs_n                      : inout  std_logic_vector(3 downto 0);
     DDR_dqs_p                      : inout  std_logic_vector(3 downto 0);
     
-    -- Anios_0
+    -- Anios IO Connector 0
     IO0_D0_P                       : inout   std_logic;
     IO0_D1_N                       : inout   std_logic;
     IO0_D2_P                       : inout   std_logic;
@@ -83,7 +83,7 @@ entity Mars_ZX3_ST3 is
     IO0_CLK_N                      : inout   std_logic;
     IO0_CLK_P                      : inout   std_logic;
     
-    -- Anios_1
+    -- Anios IO Connector 1
     IO1_D0_P                       : inout   std_logic;
     IO1_D1_N                       : inout   std_logic;
     IO1_D2_P                       : inout   std_logic;
@@ -114,7 +114,7 @@ entity Mars_ZX3_ST3 is
     -- DDR3
     DDR3_VSEL                      : inout   std_logic;
     
-    -- DP
+    -- Display Port
     DP_HPD                         : in      std_logic;
     DP_AUX_IN                      : in      std_logic;
     DP_AUX_OE                      : out     std_logic;
@@ -126,28 +126,28 @@ entity Mars_ZX3_ST3 is
     
     -- HDMI
     HDMI_CEC_WDI                   : inout   std_logic;
-    HDMI_HPD                       : inout   std_logic;
-    HDMI_D0_N                      : inout   std_logic;
-    HDMI_D0_P                      : inout   std_logic;
-    HDMI_D1_N                      : inout   std_logic;
-    HDMI_D1_P                      : inout   std_logic;
-    HDMI_D2_N                      : inout   std_logic;
-    HDMI_D2_P                      : inout   std_logic;
-    HDMI_CLK_N                     : inout   std_logic;
-    HDMI_CLK_P                     : inout   std_logic;
+    HDMI_HPD                       : in      std_logic;
+    HDMI_D0_N                      : out     std_logic;
+    HDMI_D0_P                      : out     std_logic;
+    HDMI_D1_N                      : out     std_logic;
+    HDMI_D1_P                      : out     std_logic;
+    HDMI_D2_N                      : out     std_logic;
+    HDMI_D2_P                      : out     std_logic;
+    HDMI_CLK_N                     : out     std_logic;
+    HDMI_CLK_P                     : out     std_logic;
     
-    -- I2C_PL
-    I2C_INT_N                      : in      std_logic;
+    -- I2C PL
+    I2C_MGMT_INT_N                 : in      std_logic;
     Rev4                           : in      std_logic;
     Rev5                           : in      std_logic;
-    I2C_SCL                        : inout   std_logic;
-    I2C_SDA                        : inout   std_logic;
+    I2C_MGMT_SCL                   : inout   std_logic;
+    I2C_MGMT_SDA                   : inout   std_logic;
     
-    -- I2C_USER
+    -- I2C User
     I2C_USER_SCL                   : inout   std_logic;
     I2C_USER_SDA                   : inout   std_logic;
     
-    -- IO_2
+    -- IO Connector 2
     IO2_D0_P                       : inout   std_logic;
     IO2_D1_N                       : inout   std_logic;
     IO2_D2_P                       : inout   std_logic;
@@ -157,7 +157,7 @@ entity Mars_ZX3_ST3 is
     IO2_D6_P                       : inout   std_logic;
     IO2_D7_N                       : inout   std_logic;
     
-    -- IO_3
+    -- IO Connector 3
     IO3_D0_P                       : inout   std_logic;
     IO3_D1_N                       : inout   std_logic;
     IO3_D2_P                       : inout   std_logic;
@@ -177,7 +177,7 @@ entity Mars_ZX3_ST3 is
     MIPI_CLK_N                     : inout   std_logic;
     MIPI_CLK_P                     : inout   std_logic;
     
-    -- PL_Gig_Ethernet
+    -- PL Gig Ethernet
     ETH_LED2_N                     : inout   std_logic;
     ETH_MDC                        : out     std_logic;
     ETH_RXCLK                      : in      std_logic;
@@ -198,7 +198,7 @@ entity Mars_ZX3_ST3 is
     USBH_SSTX_N                    : inout   std_logic;
     USBH_SSTX_P                    : inout   std_logic;
     
-    -- User_Osc
+    -- User Oscillator
     OSC_N                          : in      std_logic;
     OSC_P                          : in      std_logic
   );
@@ -213,7 +213,6 @@ architecture rtl of Mars_ZX3_ST3 is
     port (
       Clk50               : out    std_logic;
       Rst_N               : out    std_logic;
-      I2C_INT             : in     std_logic;
       FIXED_IO_mio        : inout  std_logic_vector(53 downto 0);
       FIXED_IO_ddr_vrn    : inout  std_logic;
       FIXED_IO_ddr_vrp    : inout  std_logic;
@@ -235,42 +234,51 @@ architecture rtl of Mars_ZX3_ST3 is
       DDR_dq              : inout  std_logic_vector(31 downto 0);
       DDR_dqs_n           : inout  std_logic_vector(3 downto 0);
       DDR_dqs_p           : inout  std_logic_vector(3 downto 0);
-      IIC_0_sda_i         : in     std_logic;
-      IIC_0_sda_o         : out    std_logic;
-      IIC_0_sda_t         : out    std_logic;
-      IIC_0_scl_i         : in     std_logic;
-      IIC_0_scl_o         : out    std_logic;
-      IIC_0_scl_t         : out    std_logic;
+      IIC_MGMT_sda_i      : in     std_logic;
+      IIC_MGMT_sda_o      : out    std_logic;
+      IIC_MGMT_sda_t      : out    std_logic;
+      IIC_MGMT_scl_i      : in     std_logic;
+      IIC_MGMT_scl_o      : out    std_logic;
+      IIC_MGMT_scl_t      : out    std_logic;
       LED_N               : out    std_logic_vector(3 downto 0);
-      IIC_1_sda_i         : in     std_logic;
-      IIC_1_sda_o         : out    std_logic;
-      IIC_1_sda_t         : out    std_logic;
-      IIC_1_scl_i         : in     std_logic;
-      IIC_1_scl_o         : out    std_logic;
-      IIC_1_scl_t         : out    std_logic
+      I2C_INT             : in     std_logic;
+      IIC_USER_sda_i      : in     std_logic;
+      IIC_USER_sda_o      : out    std_logic;
+      IIC_USER_sda_t      : out    std_logic;
+      IIC_USER_scl_i      : in     std_logic;
+      IIC_USER_scl_o      : out    std_logic;
+      IIC_USER_scl_t      : out    std_logic
     );
     
   end component Mars_ZX3;
+  
+  component OBUFDS is
+    port (
+      I : in STD_LOGIC;
+      O : out STD_LOGIC;
+      OB : out STD_LOGIC
+    );
+  end component OBUFDS;
 
   ---------------------------------------------------------------------------------------------------
   -- signal declarations
   ---------------------------------------------------------------------------------------------------
   signal Clk50            : std_logic;
   signal Rst_N            : std_logic;
-  signal I2C_INT          : std_logic;
-  signal IIC_0_sda_i      : std_logic;
-  signal IIC_0_sda_o      : std_logic;
-  signal IIC_0_sda_t      : std_logic;
-  signal IIC_0_scl_i      : std_logic;
-  signal IIC_0_scl_o      : std_logic;
-  signal IIC_0_scl_t      : std_logic;
+  signal IIC_MGMT_sda_i   : std_logic;
+  signal IIC_MGMT_sda_o   : std_logic;
+  signal IIC_MGMT_sda_t   : std_logic;
+  signal IIC_MGMT_scl_i   : std_logic;
+  signal IIC_MGMT_scl_o   : std_logic;
+  signal IIC_MGMT_scl_t   : std_logic;
   signal LED_N            : std_logic_vector(3 downto 0);
-  signal IIC_1_sda_i      : std_logic;
-  signal IIC_1_sda_o      : std_logic;
-  signal IIC_1_sda_t      : std_logic;
-  signal IIC_1_scl_i      : std_logic;
-  signal IIC_1_scl_o      : std_logic;
-  signal IIC_1_scl_t      : std_logic;
+  signal I2C_INT          : std_logic;
+  signal IIC_USER_sda_i   : std_logic;
+  signal IIC_USER_sda_o   : std_logic;
+  signal IIC_USER_sda_t   : std_logic;
+  signal IIC_USER_scl_i   : std_logic;
+  signal IIC_USER_scl_o   : std_logic;
+  signal IIC_USER_scl_t   : std_logic;
   signal LedCount         : unsigned(23 downto 0);
 
 begin
@@ -282,7 +290,6 @@ begin
     port map (
       Clk50                => Clk50,
       Rst_N                => Rst_N,
-      I2C_INT              => I2C_INT,
       FIXED_IO_mio         => FIXED_IO_mio,
       FIXED_IO_ddr_vrn     => FIXED_IO_ddr_vrn,
       FIXED_IO_ddr_vrp     => FIXED_IO_ddr_vrp,
@@ -304,27 +311,58 @@ begin
       DDR_dq               => DDR_dq,
       DDR_dqs_n            => DDR_dqs_n,
       DDR_dqs_p            => DDR_dqs_p,
-      IIC_0_sda_i          => IIC_0_sda_i,
-      IIC_0_sda_o          => IIC_0_sda_o,
-      IIC_0_sda_t          => IIC_0_sda_t,
-      IIC_0_scl_i          => IIC_0_scl_i,
-      IIC_0_scl_o          => IIC_0_scl_o,
-      IIC_0_scl_t          => IIC_0_scl_t,
+      IIC_MGMT_sda_i       => IIC_MGMT_sda_i,
+      IIC_MGMT_sda_o       => IIC_MGMT_sda_o,
+      IIC_MGMT_sda_t       => IIC_MGMT_sda_t,
+      IIC_MGMT_scl_i       => IIC_MGMT_scl_i,
+      IIC_MGMT_scl_o       => IIC_MGMT_scl_o,
+      IIC_MGMT_scl_t       => IIC_MGMT_scl_t,
       LED_N                => LED_N,
-      IIC_1_sda_i          => IIC_1_sda_i,
-      IIC_1_sda_o          => IIC_1_sda_o,
-      IIC_1_sda_t          => IIC_1_sda_t,
-      IIC_1_scl_i          => IIC_1_scl_i,
-      IIC_1_scl_o          => IIC_1_scl_o,
-      IIC_1_scl_t          => IIC_1_scl_t
+      I2C_INT              => I2C_INT,
+      IIC_USER_sda_i       => IIC_USER_sda_i,
+      IIC_USER_sda_o       => IIC_USER_sda_o,
+      IIC_USER_sda_t       => IIC_USER_sda_t,
+      IIC_USER_scl_i       => IIC_USER_scl_i,
+      IIC_USER_scl_o       => IIC_USER_scl_o,
+      IIC_USER_scl_t       => IIC_USER_scl_t
     );
   
-  DDR3_VSEL <= '0';
-  I2C_SDA  <= IIC_0_sda_o when IIC_0_sda_t = '0' else 'Z';
-  IIC_0_sda_i <= I2C_SDA;
-  I2C_SCL <= IIC_0_scl_o when IIC_0_scl_t = '0' else 'Z';
-  IIC_0_scl_i <= I2C_SCL;
-  I2C_INT <= not I2C_INT_N when Rev5 = '0' else I2C_INT_N;
+  DDR3_VSEL <= 'Z';
+  
+  hdmi_clock_buf: component OBUFDS
+    port map (
+      I => '0',
+      O => HDMI_CLK_P,
+      OB => HDMI_CLK_N
+    );
+  
+  hdmi_d0_buf: component OBUFDS
+    port map (
+      I => '0',
+      O => HDMI_D0_P,
+      OB => HDMI_D0_N
+    );
+  
+  hdmi_d1_buf: component OBUFDS
+    port map (
+      I => '0',
+      O => HDMI_D1_P,
+      OB => HDMI_D1_N
+    );
+  
+  hdmi_d2_buf: component OBUFDS
+    port map (
+      I => '0',
+      O => HDMI_D2_P,
+      OB => HDMI_D2_N
+    );
+  
+  I2C_MGMT_SDA  <= IIC_MGMT_sda_o when IIC_MGMT_sda_t = '0' else 'Z';
+  IIC_MGMT_sda_i <= I2C_MGMT_SDA;
+  I2C_MGMT_SCL <= IIC_MGMT_scl_o when IIC_MGMT_scl_t = '0' else 'Z';
+  IIC_MGMT_scl_i <= I2C_MGMT_SCL;
+  I2C_INT <= not I2C_MGMT_INT_N when Rev5 = '0' else I2C_MGMT_INT_N;
+  
   process (Clk50)
   begin
     if rising_edge (Clk50) then
@@ -339,9 +377,10 @@ begin
   LED1_N <= '0' when LED_N(0) = '0' else 'Z';
   LED2_N <= '0' when LED_N(1) = '0' else 'Z';
   LED3_N <= '0' when LED_N(2) = '0' else 'Z';
-  I2C_USER_SDA  <= IIC_1_sda_o when IIC_1_sda_t = '0' else 'Z';
-  IIC_1_sda_i <= I2C_USER_SDA;
-  I2C_USER_SCL <= IIC_1_scl_o when IIC_1_scl_t = '0' else 'Z';
-  IIC_1_scl_i <= I2C_USER_SCL;
-
+  
+  I2C_USER_SDA  <= IIC_USER_sda_o when IIC_USER_sda_t = '0' else 'Z';
+  IIC_USER_sda_i <= I2C_USER_SDA;
+  I2C_USER_SCL <= IIC_USER_scl_o when IIC_USER_scl_t = '0' else 'Z';
+  IIC_USER_scl_i <= I2C_USER_SCL;
+  
 end rtl;

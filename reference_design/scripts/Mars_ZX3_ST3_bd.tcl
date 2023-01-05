@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------------
-# Copyright (c) 2021 by Enclustra GmbH, Switzerland.
+# Copyright (c) 2022 by Enclustra GmbH, Switzerland.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this hardware, software, firmware, and associated documentation files (the
@@ -57,6 +57,8 @@ set_property -dict [ list \
   CONFIG.PCW_IRQ_F2P_INTR {1} \
 ] [get_bd_cells processing_system7]
 
+create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset ps_sys_rst
+
 if { $CPU_FREQ == "1C"} {
   set_property -dict [ list \
     CONFIG.PCW_APU_PERIPHERAL_FREQMHZ {667} \
@@ -68,11 +70,6 @@ if { $CPU_FREQ == "2I"} {
     CONFIG.PCW_APU_PERIPHERAL_FREQMHZ {767} \
   ] [get_bd_cells processing_system7]
 }
-
-create_bd_cell -type ip -vlnv xilinx.com:ip:xadc_wiz xadc_wiz
-set_property -dict [ list \
-  CONFIG.CHANNEL_ENABLE_VP_VN {false} \
-] [get_bd_cells xadc_wiz]
 
 if { $PS_DDR == "PS_D9"} {
   set_property -dict [ list \
@@ -89,7 +86,7 @@ if { $PS_DDR == "PS_D9"} {
     CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY1 {0.241} \
     CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY2 {0.248} \
     CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY3 {0.285} \
-    CONFIG.PCW_UIPARAM_DDR_MEMORY_TYPE {DDR 3 (Low Voltage)} \
+    CONFIG.PCW_UIPARAM_DDR_MEMORY_TYPE {DDR 3} \
     CONFIG.PCW_UIPARAM_DDR_DEVICE_CAPACITY {2048 MBits} \
     CONFIG.PCW_UIPARAM_DDR_DRAM_WIDTH {16 Bits} \
     CONFIG.PCW_UIPARAM_DDR_PARTNO {Custom} \
@@ -111,12 +108,32 @@ if { $PS_DDR == "PS_D10"} {
     CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY1 {0.241} \
     CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY2 {0.248} \
     CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY3 {0.285} \
-    CONFIG.PCW_UIPARAM_DDR_MEMORY_TYPE {DDR 3 (Low Voltage)} \
+    CONFIG.PCW_UIPARAM_DDR_MEMORY_TYPE {DDR 3} \
     CONFIG.PCW_UIPARAM_DDR_DEVICE_CAPACITY {4096 MBits} \
     CONFIG.PCW_UIPARAM_DDR_DRAM_WIDTH {16 Bits} \
     CONFIG.PCW_UIPARAM_DDR_PARTNO {Custom} \
   ] [get_bd_cells processing_system7]
 }
+
+create_bd_cell -type ip -vlnv xilinx.com:ip:xadc_wiz xadc_wiz
+set_property -dict [ list \
+  CONFIG.TEMPERATURE_ALARM_OT_TRIGGER {85} \
+  CONFIG.CHANNEL_ENABLE_VP_VN {false} \
+] [get_bd_cells xadc_wiz]
+set_property -dict [ list \
+  CONFIG.PCW_MIO_16_SLEW {fast} \
+  CONFIG.PCW_MIO_17_SLEW {fast} \
+  CONFIG.PCW_MIO_18_SLEW {fast} \
+  CONFIG.PCW_MIO_19_SLEW {fast} \
+  CONFIG.PCW_MIO_20_SLEW {fast} \
+  CONFIG.PCW_MIO_21_SLEW {fast} \
+  CONFIG.PCW_MIO_22_SLEW {fast} \
+  CONFIG.PCW_MIO_23_SLEW {fast} \
+  CONFIG.PCW_MIO_24_SLEW {fast} \
+  CONFIG.PCW_MIO_25_SLEW {fast} \
+  CONFIG.PCW_MIO_26_SLEW {fast} \
+  CONFIG.PCW_MIO_27_SLEW {fast} \
+] [get_bd_cells processing_system7]
 set_property -dict [ list \
   CONFIG.PCW_I2C1_PERIPHERAL_ENABLE {1} \
 ] [get_bd_cells processing_system7]
@@ -127,40 +144,39 @@ set_property -dict [ list \
   CONFIG.C_ALL_OUTPUTS {1} \
 ] [get_bd_cells LED]
 
-create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 smartconnect_0
-set_property -dict [list CONFIG.NUM_MI {2} CONFIG.NUM_SI {1}] [get_bd_cells smartconnect_0]
-create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 ps_sys_reset
-set_property -dict [list CONFIG.C_AUX_RESET_HIGH.VALUE_SRC USER] [get_bd_cells ps_sys_reset]
-set_property -dict [list CONFIG.C_AUX_RESET_HIGH {0}] [get_bd_cells ps_sys_reset]
 connect_bd_net [get_bd_pins processing_system7/FCLK_CLK0] [get_bd_pins processing_system7/M_AXI_GP0_ACLK]
-connect_bd_net [get_bd_pins smartconnect_0/aclk] [get_bd_pins processing_system7/FCLK_CLK0]
-connect_bd_intf_net [get_bd_intf_pins smartconnect_0/M01_AXI] [get_bd_intf_pins xadc_wiz/s_axi_lite]
-connect_bd_net [get_bd_pins xadc_wiz/s_axi_aclk] [get_bd_pins processing_system7/FCLK_CLK0]
-connect_bd_intf_net [get_bd_intf_pins smartconnect_0/S00_AXI] [get_bd_intf_pins processing_system7/M_AXI_GP0]
-connect_bd_net [get_bd_pins ps_sys_reset/slowest_sync_clk] [get_bd_pins processing_system7/FCLK_CLK0]
-connect_bd_net [get_bd_pins ps_sys_reset/ext_reset_in] [get_bd_pins processing_system7/FCLK_RESET0_N]
-connect_bd_net [get_bd_pins ps_sys_reset/peripheral_aresetn] [get_bd_pins xadc_wiz/s_axi_aresetn]
-connect_bd_net [get_bd_pins ps_sys_reset/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn]
+connect_bd_net [get_bd_pins ps_sys_rst/slowest_sync_clk] [get_bd_pins processing_system7/FCLK_CLK0]
+connect_bd_net [get_bd_pins ps_sys_rst/ext_reset_in] [get_bd_pins processing_system7/FCLK_RESET0_N]
 set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
 connect_bd_intf_net [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7/FIXED_IO]
 set DDR [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
 connect_bd_intf_net [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7/DDR]
-set IIC_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 IIC_0 ]
-connect_bd_intf_net [get_bd_intf_ports IIC_0] [get_bd_intf_pins processing_system7/IIC_0]
-set IIC_1 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 IIC_1 ]
-connect_bd_intf_net [get_bd_intf_ports IIC_1] [get_bd_intf_pins processing_system7/IIC_1]
-connect_bd_intf_net [get_bd_intf_pins smartconnect_0/M00_AXI] [get_bd_intf_pins LED/S_AXI]
-connect_bd_net [get_bd_pins LED/s_axi_aclk] [get_bd_pins processing_system7/FCLK_CLK0]
-connect_bd_net [get_bd_pins ps_sys_reset/peripheral_aresetn] [get_bd_pins LED/s_axi_aresetn]
+set IIC_USER [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 IIC_USER ]
+connect_bd_intf_net [get_bd_intf_ports IIC_USER] [get_bd_intf_pins processing_system7/IIC_1]
+set IIC_MGMT [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 IIC_MGMT ]
+connect_bd_intf_net [get_bd_intf_ports IIC_MGMT] [get_bd_intf_pins processing_system7/IIC_0]
+
+create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect smartconnect_00
+set_property -dict [list CONFIG.NUM_MI {2} CONFIG.NUM_CLKS {1} CONFIG.NUM_SI {1}] [get_bd_cells smartconnect_00]
+connect_bd_intf_net [get_bd_intf_pins processing_system7/M_AXI_GP0] [get_bd_intf_pins smartconnect_00/S00_AXI]
+connect_bd_net [get_bd_pins processing_system7/FCLK_CLK0] [get_bd_pins smartconnect_00/aclk]
+connect_bd_net [get_bd_pins ps_sys_rst/interconnect_aresetn] [get_bd_pins smartconnect_00/aresetn]
+connect_bd_intf_net [get_bd_intf_pins smartconnect_00/M00_AXI ] [get_bd_intf_pins xadc_wiz/S_AXI_LITE]
+connect_bd_intf_net [get_bd_intf_pins smartconnect_00/M01_AXI ] [get_bd_intf_pins led/S_AXI]
+
+connect_bd_net [get_bd_pins ps_sys_rst/peripheral_aresetn] [get_bd_pins xadc_wiz/s_axi_aresetn]
+connect_bd_net [get_bd_pins processing_system7/FCLK_CLK0] [get_bd_pins xadc_wiz/s_axi_aclk]
+connect_bd_net [get_bd_pins ps_sys_rst/peripheral_aresetn] [get_bd_pins led/s_axi_aresetn]
+connect_bd_net [get_bd_pins processing_system7/FCLK_CLK0] [get_bd_pins led/s_axi_aclk]
 
 set Clk50 [ create_bd_port -dir O -type clk Clk50]
 connect_bd_net [get_bd_ports Clk50] [get_bd_pins processing_system7/FCLK_CLK1]
 set Rst_N [ create_bd_port -dir O -type rst Rst_N]
 connect_bd_net [get_bd_ports Rst_N] [get_bd_pins processing_system7/FCLK_RESET0_N]
-set I2C_INT [ create_bd_port -dir I I2C_INT]
-connect_bd_net [get_bd_ports I2C_INT] [get_bd_pins processing_system7/IRQ_F2P]
 set LED_N [ create_bd_port -dir O -from 3 -to 0 LED_N]
 connect_bd_net [get_bd_ports LED_N] [get_bd_pins LED/gpio_io_o]
+set I2C_INT [ create_bd_port -dir I I2C_INT]
+connect_bd_net [get_bd_ports I2C_INT] [get_bd_pins processing_system7/IRQ_F2P]
 assign_bd_address
 save_bd_design
 validate_bd_design
