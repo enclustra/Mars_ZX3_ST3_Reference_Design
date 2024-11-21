@@ -1,5 +1,5 @@
----------------------------------------------------------------------------------------------------
--- Copyright (c) 2022 by Enclustra GmbH, Switzerland.
+----------------------------------------------------------------------------------------------------
+-- Copyright (c) 2024 by Enclustra GmbH, Switzerland.
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy of
 -- this hardware, software, firmware, and associated documentation files (the
@@ -17,43 +17,44 @@
 -- HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 -- OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 -- PRODUCT OR THE USE OR OTHER DEALINGS IN THE PRODUCT.
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 -- libraries
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 -- entity declaration
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 entity Mars_ZX3_ST3 is
   
   port (
+    
     -- PS MIO Pins
-    FIXED_IO_mio                   : inout  std_logic_vector(53 downto 0);
-    FIXED_IO_ddr_vrn               : inout  std_logic;
-    FIXED_IO_ddr_vrp               : inout  std_logic;
-    FIXED_IO_ps_srstb              : inout  std_logic;
-    FIXED_IO_ps_clk                : inout  std_logic;
-    FIXED_IO_ps_porb               : inout  std_logic;
-    DDR_cas_n                      : inout  std_logic;
-    DDR_cke                        : inout  std_logic;
-    DDR_ck_n                       : inout  std_logic;
-    DDR_ck_p                       : inout  std_logic;
-    DDR_cs_n                       : inout  std_logic;
-    DDR_reset_n                    : inout  std_logic;
-    DDR_odt                        : inout  std_logic;
-    DDR_ras_n                      : inout  std_logic;
-    DDR_we_n                       : inout  std_logic;
-    DDR_ba                         : inout  std_logic_vector(2 downto 0);
-    DDR_addr                       : inout  std_logic_vector(14 downto 0);
-    DDR_dm                         : inout  std_logic_vector(3 downto 0);
-    DDR_dq                         : inout  std_logic_vector(31 downto 0);
-    DDR_dqs_n                      : inout  std_logic_vector(3 downto 0);
-    DDR_dqs_p                      : inout  std_logic_vector(3 downto 0);
+    FIXED_IO_mio                   : inout   std_logic_vector(53 downto 0);
+    FIXED_IO_ddr_vrn               : inout   std_logic;
+    FIXED_IO_ddr_vrp               : inout   std_logic;
+    FIXED_IO_ps_srstb              : inout   std_logic;
+    FIXED_IO_ps_clk                : inout   std_logic;
+    FIXED_IO_ps_porb               : inout   std_logic;
+    DDR_cas_n                      : inout   std_logic;
+    DDR_cke                        : inout   std_logic;
+    DDR_ck_n                       : inout   std_logic;
+    DDR_ck_p                       : inout   std_logic;
+    DDR_cs_n                       : inout   std_logic;
+    DDR_reset_n                    : inout   std_logic;
+    DDR_odt                        : inout   std_logic;
+    DDR_ras_n                      : inout   std_logic;
+    DDR_we_n                       : inout   std_logic;
+    DDR_ba                         : inout   std_logic_vector(2 downto 0);
+    DDR_addr                       : inout   std_logic_vector(14 downto 0);
+    DDR_dm                         : inout   std_logic_vector(3 downto 0);
+    DDR_dq                         : inout   std_logic_vector(31 downto 0);
+    DDR_dqs_n                      : inout   std_logic_vector(3 downto 0);
+    DDR_dqs_p                      : inout   std_logic_vector(3 downto 0);
     
     -- Anios IO Connector 0
     IO0_D0_P                       : inout   std_logic;
@@ -170,12 +171,12 @@ entity Mars_ZX3_ST3 is
     LED3_N                         : out     std_logic;
     
     -- MIPI
-    MIPI_D0_N                      : inout   std_logic;
-    MIPI_D0_P                      : inout   std_logic;
-    MIPI_D1_N                      : inout   std_logic;
-    MIPI_D1_P                      : inout   std_logic;
-    MIPI_CLK_N                     : inout   std_logic;
-    MIPI_CLK_P                     : inout   std_logic;
+    MIPI_D0_N                      : in      std_logic;
+    MIPI_D0_P                      : in      std_logic;
+    MIPI_D1_N                      : in      std_logic;
+    MIPI_D1_P                      : in      std_logic;
+    MIPI_CLK_N                     : in      std_logic;
+    MIPI_CLK_P                     : in      std_logic;
     
     -- PL Gig Ethernet
     ETH_LED2_N                     : inout   std_logic;
@@ -188,6 +189,18 @@ entity Mars_ZX3_ST3 is
     ETH_TXCTL                      : out     std_logic;
     ETH_RXD                        : in      std_logic_vector(3 downto 0);
     ETH_TXD                        : out     std_logic_vector(3 downto 0);
+    
+    -- SDIO
+    SDIO_CLK                       : inout   std_logic;
+    SDIO_CMD                       : inout   std_logic;
+    SDIO_D0                        : inout   std_logic;
+    SDIO_D1                        : inout   std_logic;
+    SDIO_D2                        : inout   std_logic;
+    SDIO_D3                        : inout   std_logic;
+    
+    -- ST3 LED
+    GPIO0_LED0_N                   : out     std_logic;
+    GPIO1_LED1_N                   : out     std_logic;
     
     -- USB
     USB_RST_N                      : inout   std_logic;
@@ -206,9 +219,9 @@ end Mars_ZX3_ST3;
 
 architecture rtl of Mars_ZX3_ST3 is
 
-  ---------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
   -- component declarations
-  ---------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
   component Mars_ZX3 is
     port (
       Clk50               : out    std_logic;
@@ -260,9 +273,9 @@ architecture rtl of Mars_ZX3_ST3 is
     );
   end component OBUFDS;
 
-  ---------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
   -- signal declarations
-  ---------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
   signal Clk50            : std_logic;
   signal Rst_N            : std_logic;
   signal IIC_MGMT_sda_i   : std_logic;
@@ -280,12 +293,16 @@ architecture rtl of Mars_ZX3_ST3 is
   signal IIC_USER_scl_o   : std_logic;
   signal IIC_USER_scl_t   : std_logic;
   signal LedCount         : unsigned(23 downto 0);
+  
+  ----------------------------------------------------------------------------------------------------
+  -- attribute declarations
+  ----------------------------------------------------------------------------------------------------
 
 begin
   
-  ---------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
   -- processor system instance
-  ---------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
   Mars_ZX3_i: component Mars_ZX3
     port map (
       Clk50                => Clk50,
@@ -356,7 +373,6 @@ begin
       O => HDMI_D2_P,
       OB => HDMI_D2_N
     );
-  
   I2C_MGMT_SDA  <= IIC_MGMT_sda_o when IIC_MGMT_sda_t = '0' else 'Z';
   IIC_MGMT_sda_i <= I2C_MGMT_SDA;
   I2C_MGMT_SCL <= IIC_MGMT_scl_o when IIC_MGMT_scl_t = '0' else 'Z';
@@ -382,5 +398,8 @@ begin
   IIC_USER_sda_i <= I2C_USER_SDA;
   I2C_USER_SCL <= IIC_USER_scl_o when IIC_USER_scl_t = '0' else 'Z';
   IIC_USER_scl_i <= I2C_USER_SCL;
+  
+  GPIO0_LED0_N <= 'Z';
+  GPIO1_LED1_N <= 'Z';
   
 end rtl;

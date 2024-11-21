@@ -1,5 +1,5 @@
-# ----------------------------------------------------------------------------------
-# Copyright (c) 2022 by Enclustra GmbH, Switzerland.
+# ----------------------------------------------------------------------------------------------------
+# Copyright (c) 2024 by Enclustra GmbH, Switzerland.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this hardware, software, firmware, and associated documentation files (the
@@ -17,8 +17,10 @@
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # PRODUCT OR THE USE OR OTHER DEALINGS IN THE PRODUCT.
-# ----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
+set_property CFGBVS VCCO [current_design]
+set_property CONFIG_VOLTAGE 2.5 [current_design]
 set_property BITSTREAM.CONFIG.OVERTEMPPOWERDOWN ENABLE [current_design]
  
 # ----------------------------------------------------------------------------------
@@ -111,8 +113,8 @@ set_property -dict {PACKAGE_PIN D22   IOSTANDARD LVDS_25   } [get_ports {HDMI_CL
 
 # I2C PL
 set_property -dict {PACKAGE_PIN H17   IOSTANDARD LVCMOS25  } [get_ports {I2C_MGMT_INT_N}]
-set_property -dict {PACKAGE_PIN AB21  IOSTANDARD LVCMOS25  PULLUP TRUE} [get_ports {Rev4}]
-set_property -dict {PACKAGE_PIN Y21   IOSTANDARD LVCMOS25  PULLUP TRUE} [get_ports {Rev5}]
+set_property -dict {PACKAGE_PIN AB21  IOSTANDARD LVCMOS25  PULLTYPE PULLUP} [get_ports {Rev4}]
+set_property -dict {PACKAGE_PIN Y21   IOSTANDARD LVCMOS25  PULLTYPE PULLUP} [get_ports {Rev5}]
 set_property -dict {PACKAGE_PIN R15   IOSTANDARD LVCMOS25  } [get_ports {I2C_MGMT_SCL}]
 set_property -dict {PACKAGE_PIN H15   IOSTANDARD LVCMOS25  } [get_ports {I2C_MGMT_SDA}]
 
@@ -168,6 +170,18 @@ set_property -dict {PACKAGE_PIN AB11  IOSTANDARD LVCMOS25  } [get_ports {ETH_RES
 set_property -dict {PACKAGE_PIN Y8    IOSTANDARD LVCMOS25  } [get_ports {ETH_RXCTL}]
 set_property -dict {PACKAGE_PIN V10   IOSTANDARD LVCMOS25  } [get_ports {ETH_TXCTL}]
 
+# SDIO
+set_property -dict {PACKAGE_PIN Y18   IOSTANDARD LVCMOS25  } [get_ports {SDIO_CLK}]
+set_property -dict {PACKAGE_PIN AA18  IOSTANDARD LVCMOS25  } [get_ports {SDIO_CMD}]
+set_property -dict {PACKAGE_PIN AA17  IOSTANDARD LVCMOS25  } [get_ports {SDIO_D0}]
+set_property -dict {PACKAGE_PIN AB17  IOSTANDARD LVCMOS25  } [get_ports {SDIO_D1}]
+set_property -dict {PACKAGE_PIN U17   IOSTANDARD LVCMOS25  } [get_ports {SDIO_D2}]
+set_property -dict {PACKAGE_PIN V17   IOSTANDARD LVCMOS25  } [get_ports {SDIO_D3}]
+
+# ST3 LED
+set_property -dict {PACKAGE_PIN W16   IOSTANDARD LVCMOS25  } [get_ports {GPIO0_LED0_N}]
+set_property -dict {PACKAGE_PIN Y16   IOSTANDARD LVCMOS25  } [get_ports {GPIO1_LED1_N}]
+
 # USB
 set_property -dict {PACKAGE_PIN U14   IOSTANDARD LVCMOS25  } [get_ports {USB_RST_N}]
 
@@ -178,5 +192,5 @@ set_property -dict {PACKAGE_PIN P21   IOSTANDARD LVCMOS25  } [get_ports {USBH_SS
 set_property -dict {PACKAGE_PIN P20   IOSTANDARD LVCMOS25  } [get_ports {USBH_SSTX_P}]
 
 # User Oscillator
-set_property -dict {PACKAGE_PIN L19   IOSTANDARD LVCMOS25  } [get_ports {OSC_N}]
-set_property -dict {PACKAGE_PIN L18   IOSTANDARD LVCMOS25  } [get_ports {OSC_P}]
+set_property -dict {PACKAGE_PIN L19   IOSTANDARD LVDS_25   } [get_ports {OSC_N}]
+set_property -dict {PACKAGE_PIN L18   IOSTANDARD LVDS_25   } [get_ports {OSC_P}]

@@ -1,3 +1,9 @@
+## 2024.1_v2.0.2
+* Added CFGBVS voltage constraints
+* Refactor documentation
+* Allow setting of a custom Vivado project directory
+* Connected the XADC Wizard interrupt to the PS
+
 ## 2022.1_v2.0.1
 * Doc: New document number
 * Doc: Added voltage in I/O voltage jumpers section
@@ -8,6 +14,7 @@
 * Doc: Correct IO voltage names
 * Doc: adjust voltage jumper settings for 2V5 for all IO voltages
 * Correct IO standard for differential HDMI pins
+
 ## 2020.2_v2.0.0
 * Doc: Fix incompatible project name suggestion including a '+'
 * Doc: Refer to system instead of application for creating boot image and program flash
@@ -15,6 +22,7 @@
 * Doc: Minor optimizations
 * Doc: Improve MCT instructions
 * ST3 Revision 2 adjustments
+
 ## 2020.1_v1.1.0
 * Corrected bif file in release binaries
 * Removed archive containing all binaries (complete*.zip) from release binaries
@@ -22,5 +30,6 @@
 * Added Petalinux BSP to release binaries
 * Versioning now includes Xilinx tool version
 * Changed CFG and IOA voltage to 2.5V from previously 1.8V
+
 ## 2020.1_v1.0.0
 * First release
